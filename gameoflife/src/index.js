@@ -104,16 +104,17 @@ class Main extends React.Component {
   }
 
   selectBox = (row, col) => {
-    const gridCopy = arrayClone(this.state.gridFull);
-    gridCopy[row][col] = !gridCopy[row][col];
-    this.setState(() => ({ gridFull: gridCopy }));
+    const gridFull = this.state.gridFull.map((rowArr, rowIdx) =>
+      rowArr.map((item, colIdx) => (rowIdx === row && colIdx === col ? !item : item)),
+    );
+    this.setState(() => ({ gridFull }));
   };
 
   seed = () => {
-    const gridCopy = this.state.gridFull.map(rowArr =>
+    const gridFull = this.state.gridFull.map(rowArr =>
       rowArr.map(() => Math.floor(Math.random() * 4) === 1),
     );
-    this.setState(() => ({ gridFull: gridCopy }));
+    this.setState(() => ({ gridFull }));
   };
 
   playButton = () => {
@@ -136,12 +137,12 @@ class Main extends React.Component {
   };
 
   clear = () => {
-    let grid = Array(this.rows)
+    const gridFull = Array(this.rows)
       .fill()
       .map(() => Array(this.cols).fill(false));
 
     this.setState(() => ({
-      gridFull: grid,
+      gridFull,
       generation: 0,
     }));
   };

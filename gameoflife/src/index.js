@@ -46,13 +46,36 @@ class Grid extends React.Component {
 }
 
 class Buttons extends React.Component {
+  handleSelect = (e) => {
+    this.props.gridSize(e);
+  };
   render() {
     return (
       <div className="center">
         <ButtonToolbar>
           <button className="btn btn-default" onClick={this.props.playButton}>
-            play
+            Play
           </button>
+          <button className="btn btn-default" onClick={this.props.pauseButton}>
+            Pause
+          </button>
+          <button className="btn btn-default" onClick={this.props.clear}>
+            Clear
+          </button>
+          <button className="btn btn-default" onClick={this.props.slow}>
+            Slow
+          </button>
+          <button className="btn btn-default" onClick={this.props.fast}>
+            Fast
+          </button>
+          <button className="btn btn-default" onClick={this.props.seed}>
+            Seed
+          </button>
+          <DropdownButton title="Grid Size" id="size-menu" onSelect={this.handleSelect}>
+            <MenuItem eventKey="1">20x10</MenuItem>
+            <MenuItem eventKey="2">50x30</MenuItem>
+            <MenuItem eventKey="3">70x50</MenuItem>
+          </DropdownButton>
         </ButtonToolbar>
       </div>
     );
@@ -99,6 +122,44 @@ class Main extends React.Component {
 
   pauseButton = () => {
     clearInterval(this.intervalId);
+  };
+
+  slow = () => {
+    this.speed = 1000;
+    this.playButton();
+  };
+
+  fast = () => {
+    this.speed = 100;
+    this.playButton();
+  };
+
+  clear = () => {
+    let grid = Array(this.rows)
+      .fill()
+      .map(() => Array(this.cols).fill(false));
+
+    this.setState(() => ({
+      gridFull: grid,
+      generation: 0,
+    }));
+  };
+
+  gridSize = (size) => {
+    switch (size) {
+      case '1':
+        this.cols = 20;
+        this.rows = 10;
+        break;
+      case '2':
+        this.cols = 50;
+        this.rows = 30;
+        break;
+      default:
+        this.cols = 70;
+        this.rows = 50;
+    }
+    this.clear();
   };
 
   play = () => {

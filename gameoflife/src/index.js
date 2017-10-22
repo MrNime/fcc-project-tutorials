@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 import { ButtonToolbar, MenuItem, DropdownButton } from 'react-bootstrap';
 import './index.css';
 
+function arrayClone(arr) {
+  return JSON.parse(JSON.stringify(arr));
+}
+
 class Box extends React.Component {
   selectBox = () => {
     this.props.selectBox(this.props.row, this.props.col);
@@ -13,37 +17,52 @@ class Box extends React.Component {
   }
 }
 
-class Grid extends React.Component {
-  render() {
-    const width = this.props.cols * 14;
-    const rowsArr = [];
+const Grid = (props) => {
+  const width = props.cols * 14;
+  let rowsArr = [];
 
-    let boxClass = '';
-    for (let i = 0; i < this.props.rows; i++) {
-      for (let j = 0; j < this.props.cols; j++) {
-        const boxId = `${i}_${j}`;
+  let boxClass = '';
+  rowsArr = props.gridFull.map((rowArr, rowIdx) =>
+    rowArr.map((item, colIdx) => {
+      const boxId = `${rowIdx}_${colIdx}`;
 
-        boxClass = this.props.gridFull[i][j] ? 'box on' : 'box off';
-        rowsArr.push(
-          <Box
-            boxClass={boxClass}
-            key={boxId}
-            boxId={boxId}
-            row={i}
-            col={j}
-            selectBox={this.props.selectBox}
-          />,
-        );
-      }
-    }
+      boxClass = props.gridFull[rowIdx][colIdx] ? 'box on' : 'box off';
+      return (
+        <Box
+          boxClass={boxClass}
+          key={boxId}
+          boxId={boxId}
+          row={rowIdx}
+          col={colIdx}
+          selectBox={props.selectBox}
+        />
+      );
+    }),
+  );
+  // for (let i = 0; i < props.rows; i++) {
+  //   for (let j = 0; j < props.cols; j++) {
+  //     const boxId = `${i}_${j}`;
 
-    return (
-      <div className="grid" style={{ width }}>
-        {rowsArr}
-      </div>
-    );
-  }
-}
+  //     boxClass = props.gridFull[i][j] ? 'box on' : 'box off';
+  //     rowsArr.push(
+  //       <Box
+  //         boxClass={boxClass}
+  //         key={boxId}
+  //         boxId={boxId}
+  //         row={i}
+  //         col={j}
+  //         selectBox={props.selectBox}
+  //       />,
+  //     );
+  //   }
+  // }
+
+  return (
+    <div className="grid" style={{ width }}>
+      {rowsArr}
+    </div>
+  );
+};
 
 class Buttons extends React.Component {
   handleSelect = (e) => {
@@ -95,6 +114,11 @@ class Main extends React.Component {
         .fill()
         .map(() => Array(this.cols).fill(false)),
     };
+  }
+
+  componentDidMount() {
+    this.seed();
+    this.playButton();
   }
 
   selectBox = (row, col) => {
@@ -187,10 +211,6 @@ class Main extends React.Component {
     }));
   };
 
-  componentDidMount() {
-    this.seed();
-    // this.playButton();
-  }
   render() {
     return (
       <div>
@@ -214,10 +234,6 @@ class Main extends React.Component {
       </div>
     );
   }
-}
-
-function arrayClone(arr) {
-  return JSON.parse(JSON.stringify(arr));
 }
 
 ReactDOM.render(<Main />, document.getElementById('root'));
